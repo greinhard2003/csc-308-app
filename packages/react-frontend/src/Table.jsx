@@ -27,12 +27,13 @@ function TableBody(props) {
 }
 
 function Table(props) {
+  console.log("Props" + props.characterData)
   return (
     <table>
       <TableHeader />
       <TableBody
         characterData={props.characterData}
-        removeCharacter={props.removeOneCharacter}
+        removeCharacter={props.removeCharacter}
       />
     </table>
   );
