@@ -20,7 +20,7 @@ function MyApp() {
   return (
     <div className="container">
       <Table characterData={characters} removeCharacter={removeOneCharacter} />
-      <Form handleSubmit={updateList}/>
+      <Form handleSubmit={updateList} />
     </div>
   );
 }
