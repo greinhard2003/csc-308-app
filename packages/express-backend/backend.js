@@ -1,5 +1,5 @@
 // backend.js
-import express from "express";
+import express, { json } from "express";
 import cors from "cors";
 
 const app = express();
@@ -34,15 +34,16 @@ const users = {
   ],
 };
 
+const generateId = () => {
+  return Math.random();
+};
+
 const deleteUser = (id, idx) => {
-  if (idx !== -1) {
-    return users["users_list"].splice(idx, 1);
-  } else {
-    return { status: 404, message: "${id} not found" };
-  }
+  return users["users_list"].splice(idx, 1);
 };
 
 const addUser = (user) => {
+  user.id = generateId();
   users["users_list"].push(user);
   return user;
 };
@@ -93,14 +94,18 @@ app.get("/users/:id", (req, res) => {
 app.delete("/users", (req, res) => {
   const userId = req.body.id;
   const userIdx = users.users_list.findIndex((user) => user.id === userId);
-  deleteUser(userId, userIdx);
-  res.send();
+  if (userIdx !== -1) {
+    deleteUser(userId, userIdx);
+    res.status(204).send();
+  } else {
+    res.status(404).send("Resource not found.");
+  }
 });
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd);
-  res.send();
+  res.status(201).send(userToAdd);
 });
 
 app.get("/", (req, res) => {
