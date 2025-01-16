@@ -1,5 +1,6 @@
 // backend.js
 import express from "express";
+import cors from "cors";
 
 const app = express();
 const port = 8000;
@@ -33,8 +34,12 @@ const users = {
   ],
 };
 
-const deleteUser = (id) => {
-  return users["users_list"].filter((user) => user["id"] !== id);
+const deleteUser = (id, idx) => {
+  if (idx !== -1) {
+    return users["users_list"].splice(idx, 1);
+  } else {
+    return { status: 404, message: "${id} not found" };
+  }
 };
 
 const addUser = (user) => {
@@ -54,6 +59,8 @@ const findUserByJobAndName = (job, name) => {
 
 const findUserById = (id) =>
   users["users_list"].find((user) => user["id"] === id);
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -84,8 +91,9 @@ app.get("/users/:id", (req, res) => {
 });
 
 app.delete("/users", (req, res) => {
-  const userToDelete = req.body;
-  deleteUser(userToDelete);
+  const userId = req.body.id;
+  const userIdx = users.users_list.findIndex((user) => user.id === userId);
+  deleteUser(userId, userIdx);
   res.send();
 });
 
