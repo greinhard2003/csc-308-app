@@ -23,7 +23,7 @@ function MyApp() {
   }, []);
 
   function postUser(person) {
-    const promise = fetch("Http://localhost:8000/users", {
+    const promise = fetch("http://localhost:8000/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,8 +38,13 @@ function MyApp() {
     postUser(person)
       .then((res) => {
         if (res.status === 201) {
-          setCharacters([...characters, res.json()]);
+          return res.json();
+        } else {
+          throw new Error("Failed to add User");
         }
+      })
+      .then((user) => {
+        setCharacters([...characters, user]);
       })
       .catch((error) => {
         console.log(error);
@@ -47,11 +52,27 @@ function MyApp() {
   }
 
   function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index;
-    });
-    setCharacters(updated);
+    const userToDelete = characters[index];
+  
+    fetch(`http://localhost:8000/users/${userToDelete.id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (res.status === 204) {
+     
+          const updated = characters.filter((character, i) => i !== index);
+          setCharacters(updated);
+        } else if (res.status === 404) {
+          console.error("User not found.");
+        } else {
+          console.error("Failed to delete the user.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
+
   return (
     <div className="container">
       <Table characterData={characters} removeCharacter={removeOneCharacter} />

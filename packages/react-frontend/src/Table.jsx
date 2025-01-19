@@ -29,7 +29,6 @@ function TableBody(props) {
 }
 
 function Table(props) {
-  console.log("Props" + props.characterData);
   return (
     <table>
       <TableHeader />

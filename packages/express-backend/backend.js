@@ -35,11 +35,7 @@ const users = {
 };
 
 const generateId = () => {
-  return Math.random();
-};
-
-const deleteUser = (id, idx) => {
-  return users["users_list"].splice(idx, 1);
+  return Math.random().toString();
 };
 
 const addUser = (user) => {
@@ -91,14 +87,18 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
-app.delete("/users", (req, res) => {
-  const userId = req.body.id;
-  const userIdx = users.users_list.findIndex((user) => user.id === userId);
-  if (userIdx !== -1) {
-    deleteUser(userId, userIdx);
-    res.status(204).send();
+app.delete("/users/:id", (req, res) => {
+  console.log("DELETE request received for ID:", req.params.id);
+  const userid = req.params.id;
+  const userIndex = users.users_list.findIndex((user) => user.id === userid);
+
+  if (userIndex !== -1) {
+    users.users_list.splice(userIndex, 1); 
+    console.log(`User with ID ${userid} deleted.`);
+    res.status(204).send(); 
   } else {
-    res.status(404).send("Resource not found.");
+    console.log(`User with ID ${userid} not found.`);
+    res.status(404).send({ message: `User with id ${userid} not found.` });
   }
 });
 
